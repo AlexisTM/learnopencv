@@ -15,7 +15,7 @@ def readPoints(path) :
             x, y = line.split()
             points.append((int(x), int(y)))
     
-
+    print points
     return points
 
 # Apply affine transform calculated using srcTri and dstTri to src and
@@ -103,7 +103,6 @@ def warpTriangle(img1, img2, t1, t2) :
         t2Rect.append(((t2[i][0] - r2[0]),(t2[i][1] - r2[1])))
         t2RectInt.append(((t2[i][0] - r2[0]),(t2[i][1] - r2[1])))
 
-
     # Get mask by filling triangle
     mask = np.zeros((r2[3], r2[2], 3), dtype = np.float32)
     cv2.fillConvexPoly(mask, np.int32(t2RectInt), (1.0, 1.0, 1.0), 16, 0);
@@ -134,8 +133,10 @@ if __name__ == '__main__' :
         sys.exit(1)
 
     # Read images
-    filename1 = 'ted_cruz.jpg'
-    filename2 = 'donald_trump.jpg'
+    # filename1 = 'hillary_clinton.jpg'
+    # filename2 = 'donald_trump.jpg'
+    filename1 = 'donald_trump.jpg'
+    filename2 = 'hillary_clinton.jpg'
     
     img1 = cv2.imread(filename1);
     img2 = cv2.imread(filename2);
@@ -154,7 +155,6 @@ if __name__ == '__main__' :
     for i in xrange(0, len(hullIndex)):
         hull1.append(points1[hullIndex[i]])
         hull2.append(points2[hullIndex[i]])
-    
     
     # Find delanauy traingulation for convex hull points
     sizeImg2 = img2.shape    
@@ -175,8 +175,10 @@ if __name__ == '__main__' :
             t1.append(hull1[dt[i][j]])
             t2.append(hull2[dt[i][j]])
         
+        print img1, img1Warped
         warpTriangle(img1, img1Warped, t1, t2)
     
+
             
     # Calculate Mask
     hull8U = []
@@ -195,6 +197,7 @@ if __name__ == '__main__' :
     # Clone seamlessly.
     output = cv2.seamlessClone(np.uint8(img1Warped), img2, mask, center, cv2.NORMAL_CLONE)
     
+    cv2.imshow("Face ", img2)
     cv2.imshow("Face Swapped", output)
     cv2.waitKey(0)
     

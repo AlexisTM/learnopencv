@@ -25,6 +25,10 @@ center = (800,100)
 output = cv2.seamlessClone(src, dst, src_mask, center, cv2.NORMAL_CLONE)
 
 # Write result
-cv2.imwrite("images/opencv-seamless-cloning-example.jpg", output);
+cv2.imshow("Avion", src)
+cv2.imshow("Paysage", dst)
+cv2.imshow("Mask", src_mask)
+cv2.imshow("SOMME", output)
+cv2.waitKey(0)
 
 

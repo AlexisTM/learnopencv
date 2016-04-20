@@ -36,7 +36,7 @@ while True:
 
         # Take the face, with a circle arround the face
         circle_mask = np.zeros((h, w), np.uint8)
-        cv2.ellipse(circle_mask, (w/2, h/2),(w/4,h/2),0,0,360,(255,255,255),-1) 
+        cv2.ellipse(circle_mask, (w/2, h/2),(w/3,h/2),0,0,360,(255,255,255),-1) 
 
         center = (int(x+w/2), int(y+h/2-0.1*w))
         radius = int((w+h)/(4/0.7))
@@ -57,6 +57,7 @@ while True:
         # Show the faces detected on the image in color
         cv2.circle(imColor, (int(x+w/2), int(y+h/2-0.1*w)), int((w+h)/(4/0.7)), (255,0,0), thickness=3)
         cv2.circle(imColor, center, int((w+h)/(4/0.7)), (255,0,0), thickness=3)
+        cv2.ellipse(imColor, (x+w/2, y+h/2),(w/3,h/2),0,0,360,(0,255,0),-1) 
         
         #cv2.ellipse(roi_color, ((x+w/2, y+h/2), (100,100),0), (255,0,0))
 

@@ -71,8 +71,10 @@ def morphTriangle(img1, img2, img, t1, t2, t, alpha) :
 
 if __name__ == '__main__' :
 
-    filename1 = 'hillary_clinton.jpg'
-    filename2 = 'ted_cruz.jpg'
+    #filename1 = 'hillary_clinton.jpg'
+    #filename2 = 'ted_cruz.jpg'
+    filename1 = 'ted_cruz.jpg'
+    filename2 = 'hillary_clinton.jpg'
     alpha = 0.5
     
     # Read images
