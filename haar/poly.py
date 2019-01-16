@@ -1,9 +1,9 @@
 import numpy as np
 import cv2
 import time
-from VideoCapture import Device
 
-cam = Device()
+cap = cv2.VideoCapture(0)
+
 # TODO : 
 #cam.setResolution(1280,720)
 #cam.setResolution(640,480)
@@ -19,9 +19,9 @@ def generatePoints():
     pass
 
 while True:
-    img = cam.getImage()
+    ret, img = cap.read()
     im1 = np.array(img)
-    imColor = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
+    # imColor = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
     gray = cv2.cvtColor(im1,cv2.COLOR_RGB2GRAY)
     im_swapped = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
 
@@ -66,7 +66,7 @@ while True:
         # Show the faces detected on the image in color
         cv2.circle(imColor, (int(x+w/2), int(y+h/2-0.1*w)), int((w+h)/(4/0.7)), (255,0,0), thickness=3)
         cv2.circle(imColor, center, int((w+h)/(4/0.7)), (255,0,0), thickness=3)
-        cv2.ellipse(imColor, center,(w/4,h/2),0,0,360,(255),3) 
+        #cv2.ellipse(imColor, center,(w/4,h/2),0,0,360,(255),3) 
         
         #cv2.ellipse(roi_color, ((x+w/2, y+h/2), (100,100),0), (255,0,0))
 
@@ -123,51 +123,40 @@ while True:
 
         x, y, w, h = face_last
         xn, yn, wn, hn = face_new
-        print face_last
-        print face_new
-
-
-        src_face = src_face
+        print(face_last)
+        print(face_new)
 
         resized_face = cv2.resize(src_face,(w, h), interpolation = cv2.INTER_NEAREST )
         mask = np.zeros((wn, hn), dtype = np.uint8)  
        
-        if(eyes_new != None):
-            xe, ye, we, he = eyes_new
-            points = np.array([[(xe,ye-he),          \
-                            (int(xe*0.7),hn/2),       \
-                            (int(xe*1.2), int(0.8*hn)),     \
-                            (int((xe+we) - (wn-we)*0.3), int(0.8*hn)),    \
-                            (int((xe+we) + (wn-we)*0.3),hn/2),  \
-                            (xe+we, ye-he) ]])
 
-            #cv2.fillConvexPoly(mask, np.int32(cv2.hull8U), (255, 255, 255))
-            cv2.fillPoly(mask, points, (255,255,255))
-            #hullIndex = cv2.convexHull(np.array(points), returnPoints = False)
-            #print hullIndex
-            # haut gauche (xe,ye-he)
-            # milieu gauche (int(xe*0.7),h/2) % 20% en X
-            # bottom gauche (int(xe*1.2), h-ye)
-            # bottom droit ((xe+we)/1.2), h-ye)
-            # millieu droit (int((xe+he)*1.3),h/2)
-            # haut droit (xe+we, ye-he)
+        #cv2.fillConvexPoly(mask, np.int32(cv2.hull8U), (255, 255, 255))
+        # cv2.fillPoly(mask, points, (255,255,255))
+        #hullIndex = cv2.convexHull(np.array(points), returnPoints = False)
+        #print(hullIndex)
+        # haut gauche (xe,ye-he)
+        # milieu gauche (int(xe*0.7),h/2) % 20% en X
+        # bottom gauche (int(xe*1.2), h-ye)
+        # bottom droit ((xe+we)/1.2), h-ye)
+        # millieu droit (int((xe+he)*1.3),h/2)
+        # haut droit (xe+we, ye-he)
 
         resized_mask = cv2.resize(mask,(w, h), interpolation = cv2.INTER_NEAREST)
 
-        print "-----"
-        print im_swapped.shape
-        print dst_face.shape
-        print (x+w/2, y+h/2)
+        print("-----")
+        print(im_swapped.shape)
+        print(dst_face.shape)
+        print(x+w/2, y+h/2)
         cv2.imshow('1 img mask', resized_mask)
         cv2.imshow('2 img mask', mask)
         
         #im_swapped = cv2.seamlessClone(resized_face, im_swapped, mask, (200,200), cv2.NORMAL_CLONE)
     
         #im_swapped = cv2.seamlessClone(resized_face, im_swapped, mask, (x+w/2, y+h/2), cv2.NORMAL_CLONE)
-        im_swapped = cv2.seamlessClone(resized_face, im_swapped, mask, (y+h/2, x+w/2), cv2.NORMAL_CLONE)
+        #im_swapped = cv2.seamlessClone(resized_face, im_swapped, mask, (int(y+h/2), int(x+w/2)), cv2.NORMAL_CLONE)
     
 
-    cv2.imshow('img swapped', im_swapped)
+    #cv2.imshow('img swapped', im_swapped)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

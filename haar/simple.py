@@ -1,12 +1,13 @@
 import numpy as np
 import cv2
 import time
-from VideoCapture import Device
 
-cam = Device()
+from threading import Thread
+
+# cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture('rtsp://192.168.1.53/cam1/h264')
 #cam.setResolution(1280,720)
 #cam.setResolution(640,480)
-
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('haarcascade_mcs_eyepair_big.xml')
@@ -14,10 +15,35 @@ mouth_cascade = cv2.CascadeClassifier('haarcascade_mcs_mouth.xml')
 nose_cascade = cv2.CascadeClassifier('haarcascade_mcs_nose.xml')
 smile_cascade = cv2.CascadeClassifier('haarcascade_smile.xml')
 
+img = None
+ret = 0
+
+def read_and_keep_last():
+    global ret, img
+    while True:
+        retnext, imgnext = cam.read()
+        if(retnext):
+            img = imgnext
+            ret = retnext
+        else:
+            time.sleep(0.1)
+
+reader = Thread(target=read_and_keep_last)
+reader.daemon = True
+reader.start()
+
 while True:
-    img = cam.getImage()
+    if not ret:
+        print("no image...")
+        time.sleep(0.5)
+        continue
+    ret = 0 # Do not recompute last image
     im1 = np.array(img)
-    imColor = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
+    gray = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+
+
+    imColor = im1
+    # imColor = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
     gray = cv2.cvtColor(im1,cv2.COLOR_RGB2GRAY)
     im_swapped = cv2.cvtColor(im1,cv2.COLOR_RGB2BGR)
 
@@ -36,11 +62,11 @@ while True:
 
         # Take the face, with a circle arround the face
         circle_mask = np.zeros((h, w), np.uint8)
-        cv2.ellipse(circle_mask, (w/2, h/2),(w/3,h/2),0,0,360,(255,255,255),-1) 
+        # cv2.ellipse(circle_mask, (w/2, h/2),(w/3,h/2),0,0,360,(255,255,255),-1) 
 
         center = (int(x+w/2), int(y+h/2-0.1*w))
         radius = int((w+h)/(4/0.7))
-        print center, radius
+        # print center, radius
         #cv2.circle(circle_mask, center, radius, (255,255,255), thickness=-1)
         # cv2.circle(circle_mask, center, int((w+h)/(4/0.7)), (255,255,255), thickness=-1)
         
@@ -57,7 +83,7 @@ while True:
         # Show the faces detected on the image in color
         cv2.circle(imColor, (int(x+w/2), int(y+h/2-0.1*w)), int((w+h)/(4/0.7)), (255,0,0), thickness=3)
         cv2.circle(imColor, center, int((w+h)/(4/0.7)), (255,0,0), thickness=3)
-        cv2.ellipse(imColor, (x+w/2, y+h/2),(w/3,h/2),0,0,360,(0,255,0),-1) 
+        # cv2.ellipse(imColor, (x+w/2, y+h/2),(w/3,h/2),0,0,360,(0,255,0),-1) 
         
         #cv2.ellipse(roi_color, ((x+w/2, y+h/2), (100,100),0), (255,0,0))
 
@@ -109,7 +135,7 @@ while True:
         resized_face = cv2.resize(src_face,(w, h), interpolation = cv2.INTER_NEAREST )
         resized_mask = cv2.resize(src_mask,(w, h), interpolation = cv2.INTER_NEAREST )
 
-        im_swapped = cv2.seamlessClone(resized_face, im_swapped, resized_mask, (x+h/2, y+w/2), cv2.NORMAL_CLONE)
+        # im_swapped = cv2.seamlessClone(resized_face, im_swapped, resized_mask, (int(x+h/2), int(y+w/2)), cv2.NORMAL_CLONE)
         
         # height, width = src_face.shape[:2]
         # print "image resized", height, width
